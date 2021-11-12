@@ -47,26 +47,34 @@ void main()
 	/* that external pin changes don't affect it.			*/
 
 	reg_spimaster_config = 0xa002;	// Enable, prescaler = 2,
-                                        // connect to housekeeping SPI
+                                    // connect to housekeeping SPI
 
 	// Connect the housekeeping SPI to the SPI master
 	// so that the CSB line is not left floating.  This allows
 	// all of the GPIO pins to be used for user functions.
 
-	// Configure lower 8-IOs as user output
+	// Configure lower 8-IOs as user analog
 	// Observe counter value in the testbench
-	reg_mprj_io_0 =  GPIO_MODE_USER_STD_OUTPUT;
-	reg_mprj_io_1 =  GPIO_MODE_USER_STD_OUTPUT;
-	reg_mprj_io_2 =  GPIO_MODE_USER_STD_OUTPUT;
-	reg_mprj_io_3 =  GPIO_MODE_USER_STD_OUTPUT;
-	reg_mprj_io_4 =  GPIO_MODE_USER_STD_OUTPUT;
-	reg_mprj_io_5 =  GPIO_MODE_USER_STD_OUTPUT;
-	reg_mprj_io_6 =  GPIO_MODE_USER_STD_OUTPUT;
-	reg_mprj_io_7 =  GPIO_MODE_USER_STD_OUTPUT;
+	reg_mprj_io_14 =  GPIO_MODE_USER_STD_ANALOG; // analog_io[07]
+	reg_mprj_io_15 =  GPIO_MODE_USER_STD_ANALOG; // analog_io[08]
+	reg_mprj_io_16 =  GPIO_MODE_USER_STD_ANALOG; // analog_io[09]
+	reg_mprj_io_17 =  GPIO_MODE_USER_STD_ANALOG; // analog_io[10]
+
+	reg_la0_oenb = reg_la0_iena = 0x00000000;    // la_oenb[31:0]   => Output of the CPU
+	reg_la0_data = 0x00000000;					 // la_data_in[31:0] => Output of the CPU
 
 	/* Apply configuration */
 	reg_mprj_xfer = 1;
 	while (reg_mprj_xfer == 1);
 
+	// [ 3: 0] => RST		// Active High
+	// [ 7: 4] => ENb_CP 	// Active High
+	// [11: 8] => ENb_VCO	// Active High
+	reg_la0_data = 0x00000111;
+
+	for (int i = 0; i < 5; i++);
+
+	// De-assert the reset signal
+	reg_la0_data = 0x00000110;
 }
 

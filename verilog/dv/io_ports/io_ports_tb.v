@@ -28,15 +28,13 @@ module io_ports_tb;
 	reg power1, power2;
 	reg power3, power4;
 
-    	wire gpio;
-    	wire [37:0] mprj_io;
-	wire [7:0] mprj_io_0;
-
-	assign mprj_io_0 = mprj_io[7:0];
-	// assign mprj_io_0 = {mprj_io[8:4],mprj_io[2:0]};
+    wire gpio;
+    wire [37:0] mprj_io;
 
 	assign mprj_io[3] = (CSB == 1'b1) ? 1'b1 : 1'bz;
-	// assign mprj_io[3] = 1'b1;
+	assign mprj_io[15] = 1'b1;
+	assign mprj_io[16] = 1'b0;
+	assign mprj_io[17] = 1'b1;
 
 	// External clock is used by default.  Make this artificially fast for the
 	// simulation.  Normally this would be a slow clock and the digital PLL
@@ -55,7 +53,6 @@ module io_ports_tb;
 		// Repeat cycles of 1000 clock edges as needed to complete testbench
 		repeat (25) begin
 			repeat (1000) @(posedge clock);
-			// $display("+1000 cycles");
 		end
 		$display("%c[1;31m",27);
 		`ifdef GL
@@ -68,19 +65,19 @@ module io_ports_tb;
 	end
 
 	initial begin
-	    // Observe Output pins [7:0]
-	    wait(mprj_io_0 == 8'h01);
-	    wait(mprj_io_0 == 8'h02);
-	    wait(mprj_io_0 == 8'h03);
-    	    wait(mprj_io_0 == 8'h04);
-	    wait(mprj_io_0 == 8'h05);
-            wait(mprj_io_0 == 8'h06);
-	    wait(mprj_io_0 == 8'h07);
-            wait(mprj_io_0 == 8'h08);
-	    wait(mprj_io_0 == 8'h09);
-            wait(mprj_io_0 == 8'h0A);   
-	    wait(mprj_io_0 == 8'hFF);
-	    wait(mprj_io_0 == 8'h00);
+	    // Observe Output analog_io[7]
+	    wait(mprj_io[14] == 1'b1);
+		$display("1st MAX happend");
+		wait(mprj_io[14] == 1'b0);
+		$display("1st MIN happend");
+	    wait(mprj_io[14] == 1'b1);
+		$display("2end MAX happend");
+		wait(mprj_io[14] == 1'b0);
+		$display("2end MIN happend");
+	    wait(mprj_io[14] == 1'b1);
+		$display("3rd MAX happend");
+		wait(mprj_io[14] == 1'b0);
+		$display("3rd MIN happend");
 		
 		`ifdef GL
 	    	$display("Monitor: Test 1 Mega-Project IO (GL) Passed");
@@ -94,12 +91,12 @@ module io_ports_tb;
 		RSTB <= 1'b0;
 		CSB  <= 1'b1;		// Force CSB high
 		#2000;
-		RSTB <= 1'b1;	    	// Release reset
+		RSTB <= 1'b1;	    // Release reset
 		#170000;
-		CSB = 1'b0;		// CSB can be released
+		CSB = 1'b0;			// CSB can be released
 	end
 
-	initial begin		// Power-up sequence
+	initial begin			// Power-up sequence
 		power1 <= 1'b0;
 		power2 <= 1'b0;
 		power3 <= 1'b0;
@@ -114,8 +111,8 @@ module io_ports_tb;
 		power4 <= 1'b1;
 	end
 
-	always @(mprj_io) begin
-		#1 $display("MPRJ-IO state = %b ", mprj_io[7:0]);
+	always @(mprj_io[14]) begin
+		#1 $display("MPRJ-IO[14] state = %b ", mprj_io[14]);
 	end
 
 	wire flash_csb;
@@ -146,7 +143,7 @@ module io_ports_tb;
 		.vssd2	  (VSS),
 		.clock	  (clock),
 		.gpio     (gpio),
-        	.mprj_io  (mprj_io),
+        .mprj_io  (mprj_io),
 		.flash_csb(flash_csb),
 		.flash_clk(flash_clk),
 		.flash_io0(flash_io0),
@@ -161,8 +158,8 @@ module io_ports_tb;
 		.clk(flash_clk),
 		.io0(flash_io0),
 		.io1(flash_io1),
-		.io2(),			// not used
-		.io3()			// not used
+		.io2(),				// not used
+		.io3()				// not used
 	);
 
 endmodule
