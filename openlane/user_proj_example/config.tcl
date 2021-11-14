@@ -35,7 +35,7 @@ set ::env(CLOCK_NET) "CLK"
 set ::env(CLOCK_PERIOD) "50"
 
 set ::env(FP_SIZING) absolute
-set ::env(DIE_AREA) "0 0 1500 1500"
+set ::env(DIE_AREA) "0 0 1000 1000"
 
 set ::env(PL_TARGET_DENSITY) 0.2
 
@@ -56,3 +56,5 @@ set ::env(DIODE_INSERTION_STRATEGY) 4
 
 # If you're going to use multiple power domains, then disable cvc run.
 set ::env(RUN_CVC) 1
+
+set ::env(DECAP_PERCENT) 75
